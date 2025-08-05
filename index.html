@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordCraft | Advanced Word Counter Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --text-color: #333;
+            --text-light: #6c757d;
+            --bg-color: #ffffff;
+            --card-bg: #f8f9fa;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #4895ef;
+            --secondary-color: #4361ee;
+            --accent-color: #3f37c9;
+            --light-color: #212529;
+            --dark-color: #f8f9fa;
+            --text-color: #f8f9fa;
+            --text-light: #adb5bd;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 32px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: rotate(30deg);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .text-input-section,
+        .analysis-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .text-area-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #text-input {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            resize: vertical;
+            font-size: 16px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] #text-input {
+            border: 1px solid #444;
+        }
+
+        .text-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-color);
+            transform: translateY(-2px);
+        }
+
+        .file-upload {
+            display: none;
+        }
+
+        .file-upload-label {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            background-color: var(--accent-color);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .file-upload-label:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background-color: var(--bg-color);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .reading-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .reading-stat {
+            flex: 1;
+            min-width: 120px;
+            background-color: var(--bg-color);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .reading-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .reading-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .score-description {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .advanced-section {
+            margin-top: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        [data-theme="dark"] .tabs {
+            border-bottom: 1px solid #444;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .word-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            min-height: 200px;
+            align-items: center;
+        }
+
+        .cloud-word {
+            display: inline-block;
+            margin: 5px;
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .cloud-word:hover {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .word-list {
+            list-style-type: none;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .word-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        [data-theme="dark"] .word-list li {
+            border-bottom: 1px solid #444;
+        }
+
+        .word-list li span:last-child {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .highlight {
+            background-color: rgba(255, 255, 0, 0.3);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .longest-word {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .repeated-phrase {
+            background-color: rgba(255, 0, 0, 0.1);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .options-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
+        }
+
+        .language-selector {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        [data-theme="dark"] .language-selector {
+            border: 1px solid #444;
+        }
+
+        .export-btn {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px 0;
+            color: var(--text-light);
+            font-size: 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .text-actions {
+                flex-direction: column;
+            }
+
+            .btn,
+            .file-upload-label {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .reading-stats {
+                flex-direction: column;
+            }
+
+            .reading-stat {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-wordpress"></i>
+                <span>WordCraft</span>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <div class="main-grid">
+            <div class="text-input-section">
+                <h2 class="section-title">
+                    <i class="fas fa-edit"></i>
+                    <span>Your Text</span>
+                </h2>
+
+                <div class="text-actions">
+                    <div class="options-row">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="excludeStopWords">
+                            <label for="excludeStopWords">Exclude stop words</label>
+                        </div>
+                        <select class="language-selector" id="languageSelector">
+                            <option value="en">English</option>
+                            <option value="hi">Hindi</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-secondary" id="clearBtn">
+                            <i class="fas fa-broom"></i>
+                            Clear
+                        </button>
+                        <button class="btn btn-secondary" id="copyBtn">
+                            <i class="fas fa-copy"></i>
+                            Copy
+                        </button>
+                        <label for="fileUpload" class="file-upload-label">
+                            <i class="fas fa-upload"></i>
+                            Upload
+                        </label>
+                        <input type="file" id="fileUpload" class="file-upload" accept=".txt,.docx,.pdf">
+                    </div>
+                </div>
+
+                <div class="text-area-container">
+                    <textarea id="text-input" placeholder="Type or paste your text here..."></textarea>
+                </div>
+            </div>
+
+            <div class="analysis-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Text Analysis</span>
+                </h2>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="wordCount">0</div>
+                        <div class="stat-label">Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="charCount">0</div>
+                        <div class="stat-label">Characters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="charNoSpacesCount">0</div>
+                        <div class="stat-label">Chars (no spaces)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="sentenceCount">0</div>
+                        <div class="stat-label">Sentences</div>
+                    </div>
+                </div>
+
+                <div class="reading-stats">
+                    <div class="reading-stat">
+                        <div class="reading-score" id="readingTime">0</div>
+                        <div class="reading-label">Reading Time</div>
+                        <div class="score-description">(avg. 200 wpm)</div>
+                    </div>
+                    <div class="reading-stat">
+                        <div class="reading-score" id="fleschScore">0</div>
+                        <div class="reading-label">Flesch Score</div>
+                        <div class="score-description tooltip">
+                            Readability
+                            <span class="tooltiptext">Higher scores indicate easier reading</span>
+                        </div>
+                    </div>
+                    <div class="reading-stat">
+                        <div class="reading-score" id="gradeLevel">0</div>
+                        <div class="reading-label">Grade Level</div>
+                        <div class="score-description">US School Level</div>
+                    </div>
+                </div>
+
+                <div class="advanced-section">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="wordCloud">Word Cloud</div>
+                        <div class="tab" data-tab="frequentWords">Frequent Words</div>
+                        <div class="tab" data-tab="insights">Insights</div>
+                    </div>
+
+                    <div class="tab-content active" id="wordCloudTab">
+                        <div class="word-cloud" id="wordCloud">
+                            <p>Type or paste text to see word cloud visualization</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="frequentWordsTab">
+                        <div class="word-list-container">
+                            <ul class="word-list" id="frequentWordsList">
+                                <li>No frequent words to display yet</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="insightsTab">
+                        <div id="insightsContent">
+                            <p><strong>Longest word:</strong> <span id="longestWord" class="longest-word">None</span>
+                            </p>
+                            <p><strong>Repeated phrases:</strong> <span id="repeatedPhrases">None found</span></p>
+                            <p><strong>Paragraphs:</strong> <span id="paragraphCount">0</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn export-btn" id="exportBtn">
+                    <i class="fas fa-file-pdf"></i>
+                    Export as PDF
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <p>WordCraft &copy; 2023 | Advanced Word Counter Tool</p>
+        </footer>
+    </div>
+
+    <!-- Include PDF export library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- pdf.js for reading PDF files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
+
+    <!-- mammoth.js for reading DOCX files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+
+
+    <script>
+        // Global variables
+        let currentTheme = 'light';
+        let stopWords = {
+            en: ['a', 'an', 'the', 'and', 'or', 'but', 'if', 'of', 'at', 'by', 'for', 'with', 'to', 'from', 'in', 'on', 'that', 'this', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'shall', 'should', 'can', 'could', 'may', 'might', 'must', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them', 'my', 'your', 'his', 'its', 'our', 'their', 'mine', 'yours', 'hers', 'ours', 'theirs'],
+            hi: ['और', 'या', 'लेकिन', 'अगर', 'का', 'की', 'के', 'में', 'पर', 'से', 'तक', 'द्वारा', 'लिए', 'साथ', 'को', 'उस', 'इस', 'है', 'हैं', 'था', 'थे', 'हो', 'होता', 'होती', 'होते', 'मैं', 'तुम', 'वह', 'हम', 'वे', 'मुझे', 'तुम्हें', 'उसे', 'हमें', 'उन्हें', 'मेरा', 'तेरा', 'उसका', 'हमारा', 'उनका']
+        };
+        let currentLanguage = 'en';
+
+        // DOM elements
+        const themeToggle = document.getElementById('themeToggle');
+        const textInput = document.getElementById('textInput');
+        const wordCountEl = document.getElementById('wordCount');
+        const charCountEl = document.getElementById('charCount');
+        const charNoSpacesCountEl = document.getElementById('charNoSpacesCount');
+        const sentenceCountEl = document.getElementById('sentenceCount');
+        const paragraphCountEl = document.getElementById('paragraphCount');
+        const readingTimeEl = document.getElementById('readingTime');
+        const fleschScoreEl = document.getElementById('fleschScore');
+        const gradeLevelEl = document.getElementById('gradeLevel');
+        const wordCloudEl = document.getElementById('wordCloud');
+        const frequentWordsListEl = document.getElementById('frequentWordsList');
+        const longestWordEl = document.getElementById('longestWord');
+        const repeatedPhrasesEl = document.getElementById('repeatedPhrases');
+        const excludeStopWordsCheckbox = document.getElementById('excludeStopWords');
+        const languageSelector = document.getElementById('languageSelector');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const fileUpload = document.getElementById('fileUpload');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function () {
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Text analysis
+            document.getElementById('text-input').addEventListener('input', analyzeText);
+
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', switchTab);
+            });
+
+            // Button events
+            clearBtn.addEventListener('click', clearText);
+            copyBtn.addEventListener('click', copyText);
+            exportBtn.addEventListener('click', exportToPDF);
+            fileUpload.addEventListener('change', handleFileUpload);
+
+            // Options
+            excludeStopWordsCheckbox.addEventListener('change', analyzeText);
+            languageSelector.addEventListener('change', function () {
+                currentLanguage = this.value;
+                analyzeText();
+            });
+
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                currentTheme = savedTheme;
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                updateThemeIcon();
+            }
+        });
+
+        // Theme functions
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = themeToggle.querySelector('i');
+            icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // Tab functions
+        function switchTab(e) {
+            const tabId = e.target.getAttribute('data-tab');
+
+            // Update active tab
+            tabs.forEach(tab => tab.classList.remove('active'));
+            e.target.classList.add('active');
+
+            // Update active content
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabId}Tab`).classList.add('active');
+        }
+
+        // Text analysis functions
+        function analyzeText() {
+            const text = document.getElementById('text-input').value;
+
+            // Basic counts
+            const wordCount = countWords(text);
+            const charCount = text.length;
+            const charNoSpacesCount = text.replace(/\s+/g, '').length;
+            const sentenceCount = countSentences(text);
+            const paragraphCount = countParagraphs(text);
+
+            // Update basic stats
+            wordCountEl.textContent = wordCount;
+            charCountEl.textContent = charCount;
+            charNoSpacesCountEl.textContent = charNoSpacesCount;
+            sentenceCountEl.textContent = sentenceCount;
+            paragraphCountEl.textContent = paragraphCount;
+
+            // Reading stats
+            const readingTime = calculateReadingTime(wordCount);
+            const { fleschScore, gradeLevel } = calculateReadability(text);
+
+            readingTimeEl.textContent = readingTime;
+            fleschScoreEl.textContent = fleschScore;
+            gradeLevelEl.textContent = gradeLevel;
+
+            // Advanced analysis
+            const words = getWords(text);
+            const wordFrequencies = countWordFrequencies(words);
+            const longestWord = findLongestWord(words);
+            const repeatedPhrases = findRepeatedPhrases(text);
+
+            // Update advanced stats
+            updateWordCloud(wordFrequencies);
+            updateFrequentWordsList(wordFrequencies);
+            longestWordEl.textContent = longestWord || 'None';
+
+            if (repeatedPhrases.length > 0) {
+                repeatedPhrasesEl.innerHTML = repeatedPhrases.map(phrase =>
+                    `<span class="repeated-phrase">${phrase}</span>`
+                ).join(', ');
+            } else {
+                repeatedPhrasesEl.textContent = 'None found';
+            }
+
+            // Highlight in text
+            highlightText(text, repeatedPhrases, longestWord);
+        }
+
+        function countWords(text) {
+            if (!text.trim()) return 0;
+
+            // Handle Hindi and other languages with different word boundaries
+            const words = text.match(/[\p{L}\p{M}]+/gu) || [];
+
+            if (excludeStopWordsCheckbox.checked) {
+                return words.filter(word =>
+                    !stopWords[currentLanguage].includes(word.toLowerCase())
+                ).length;
+            }
+
+            return words.length;
+        }
+
+        function countSentences(text) {
+            if (!text.trim()) return 0;
+
+            // Simple sentence count - splits on .!? followed by space or end of string
+            const sentences = text.split(/[.!?]+(?=\s|$)/);
+
+            // Filter out empty strings
+            return sentences.filter(s => s.trim().length > 0).length;
+        }
+
+        function countParagraphs(text) {
+            if (!text.trim()) return 0;
+
+            // Split on newlines and filter out empty lines
+            const paragraphs = text.split(/\n+/).filter(p => p.trim().length > 0);
+            return paragraphs.length;
+        }
+
+        function calculateReadingTime(wordCount) {
+            const wordsPerMinute = 200; // Average reading speed
+            const minutes = wordCount / wordsPerMinute;
+
+            if (minutes < 1) {
+                const seconds = Math.ceil(minutes * 60);
+                return `${seconds} sec`;
+            } else if (minutes < 60) {
+                return `${Math.ceil(minutes)} min`;
+            } else {
+                const hours = Math.floor(minutes / 60);
+                const mins = Math.ceil(minutes % 60);
+                return `${hours}h ${mins}m`;
+            }
+        }
+
+        function calculateReadability(text) {
+            if (!text.trim()) return { fleschScore: 0, gradeLevel: 0 };
+
+            const words = getWords(text);
+            const sentences = countSentences(text);
+            const syllables = countSyllables(text);
+
+            if (words.length === 0 || sentences === 0) {
+                return { fleschScore: 0, gradeLevel: 0 };
+            }
+
+            // Flesch Reading Ease Score
+            const wordsPerSentence = words.length / sentences;
+            const syllablesPerWord = syllables / words.length;
+
+            let fleschScore = 206.835 - (1.015 * wordsPerSentence) - (84.6 * syllablesPerWord);
+            fleschScore = Math.round(fleschScore * 10) / 10;
+
+            // Flesch-Kincaid Grade Level
+            let gradeLevel = 0.39 * wordsPerSentence + 11.8 * syllablesPerWord - 15.59;
+            gradeLevel = Math.round(gradeLevel * 10) / 10;
+
+            return { fleschScore, gradeLevel };
+        }
+
+        function countSyllables(text) {
+            if (!text.trim()) return 0;
+
+            // Simple syllable count (approximation)
+            const words = getWords(text);
+            let totalSyllables = 0;
+
+            for (const word of words) {
+                const lowerWord = word.toLowerCase();
+                let syllableCount = 0;
+
+                // Count vowel groups
+                const vowelGroups = lowerWord.match(/[aeiouy]+/g);
+                if (vowelGroups) {
+                    syllableCount = vowelGroups.length;
+                }
+
+                // Adjust for silent e
+                if (lowerWord.endsWith('e') && syllableCount > 1) {
+                    syllableCount--;
+                }
+
+                // Ensure at least one syllable per word
+                syllableCount = Math.max(1, syllableCount);
+                totalSyllables += syllableCount;
+            }
+
+            return totalSyllables;
+        }
+
+        function getWords(text) {
+            if (!text.trim()) return [];
+
+            // Get words considering Unicode characters (for Hindi support)
+            const words = text.match(/[\p{L}\p{M}]+/gu) || [];
+
+            if (excludeStopWordsCheckbox.checked) {
+                return words.filter(word =>
+                    !stopWords[currentLanguage].includes(word.toLowerCase())
+                );
+            }
+
+            return words;
+        }
+
+        function countWordFrequencies(words) {
+            const frequency = {};
+
+            for (const word of words) {
+                const lowerWord = word.toLowerCase();
+                frequency[lowerWord] = (frequency[lowerWord] || 0) + 1;
+            }
+
+            // Convert to array and sort by frequency
+            return Object.entries(frequency)
+                .map(([word, count]) => ({ word, count }))
+                .sort((a, b) => b.count - a.count);
+        }
+
+        function findLongestWord(words) {
+            if (words.length === 0) return '';
+
+            let longest = words[0];
+
+            for (const word of words) {
+                if (word.length > longest.length) {
+                    longest = word;
+                }
+            }
+
+            return longest;
+        }
+
+        function findRepeatedPhrases(text, minLength = 3, minOccurrences = 2) {
+            if (!text.trim()) return [];
+
+            const words = getWords(text);
+            const phrases = new Map();
+
+            // Check phrases of minLength words
+            for (let i = 0; i <= words.length - minLength; i++) {
+                const phrase = words.slice(i, i + minLength).join(' ');
+                const count = phrases.get(phrase) || 0;
+                phrases.set(phrase, count + 1);
+            }
+
+            // Filter phrases that occur at least minOccurrences times
+            return Array.from(phrases.entries())
+                .filter(([_, count]) => count >= minOccurrences)
+                .map(([phrase]) => phrase);
+        }
+
+        function updateWordCloud(wordFrequencies) {
+            if (wordFrequencies.length === 0) {
+                wordCloudEl.innerHTML = '<p>No words to display</p>';
+                return;
+            }
+
+            // Get top 50 words
+            const topWords = wordFrequencies.slice(0, 50);
+
+            // Find max count for scaling
+            const maxCount = topWords[0].count;
+
+            // Clear previous cloud
+            wordCloudEl.innerHTML = '';
+
+            // Add words to cloud with size based on frequency
+            topWords.forEach(({ word, count }) => {
+                const size = 12 + (count / maxCount) * 28; // Range from 12px to 40px
+                const color = getRandomColor();
+
+                const wordEl = document.createElement('span');
+                wordEl.className = 'cloud-word';
+                wordEl.textContent = word;
+                wordEl.style.fontSize = `${size}px`;
+                wordEl.style.color = color;
+                wordEl.title = `${count} times`;
+
+                wordCloudEl.appendChild(wordEl);
+            });
+        }
+
+        function updateFrequentWordsList(wordFrequencies) {
+            if (wordFrequencies.length === 0) {
+                frequentWordsListEl.innerHTML = '<li>No frequent words to display</li>';
+                return;
+            }
+
+            // Get top 20 words
+            const topWords = wordFrequencies.slice(0, 20);
+
+            // Clear previous list
+            frequentWordsListEl.innerHTML = '';
+
+            // Add words to list
+            topWords.forEach(({ word, count }) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${word}</span>
+                    <span>${count} times</span>
+                `;
+                frequentWordsListEl.appendChild(li);
+            });
+        }
+
+        function highlightText(text, repeatedPhrases, longestWord) {
+            const textarea = document.getElementById('text-input');
+            const highlightedText = text;
+
+            // This is a simplified version - in a real app you'd need a more sophisticated
+            // highlighting system, possibly using a contenteditable div instead of textarea
+
+            // For demonstration, we'll just update the title/placeholder
+            textarea.title = `Longest word: ${longestWord}\nRepeated phrases: ${repeatedPhrases.join(', ')}`;
+        }
+
+        function getRandomColor() {
+            const colors = [
+                '#4361ee', '#3f37c9', '#4895ef', '#4cc9f0',
+                '#3a0ca3', '#7209b7', '#f72585', '#b5179e'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Utility functions
+        function clearText() {
+            document.getElementById('text-input').value = '';
+            analyzeText();
+        }
+
+        function copyText() {
+            const textarea = document.getElementById('text-input');
+            textarea.select();
+            document.execCommand('copy');
+
+            // Show feedback
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
+        }
+
+        async function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const textarea = document.getElementById('text-input');
+
+            try {
+                let text = '';
+
+                if (file.name.endsWith('.txt')) {
+                    text = await readTextFile(file);
+                } else if (file.name.endsWith('.pdf')) {
+                    text = await readPdfFile(file);
+                } else if (file.name.endsWith('.docx')) {
+                    text = await readDocxFile(file);
+                } else {
+                    alert('Unsupported file type');
+                    return;
+                }
+
+                textarea.value = text;
+                analyzeText();
+            } catch (error) {
+                console.error('Error reading file:', error);
+                alert('Error reading file. Please try again.');
+            }
+
+            // Reset file input
+            e.target.value = '';
+        }
+
+        function readTextFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+
+        // PDF Reader using pdf.js
+        function readPdfFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const typedarray = new Uint8Array(this.result);
+
+                    pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                        let allText = '';
+                        let pagesPromises = [];
+
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            pagesPromises.push(
+                                pdf.getPage(i).then(page => {
+                                    return page.getTextContent().then(content => {
+                                        const strings = content.items.map(item => item.str);
+                                        return strings.join(' ');
+                                    });
+                                })
+                            );
+                        }
+
+                        Promise.all(pagesPromises)
+                            .then(pagesText => {
+                                resolve(pagesText.join('\\n\\n'));
+                            })
+                            .catch(reject);
+                    }).catch(reject);
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // DOCX Reader using mammoth.js
+        function readDocxFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const arrayBuffer = reader.result;
+                    mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                        .then(result => {
+                            resolve(result.value);
+                        })
+                        .catch(reject);
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            let y = 15;
+
+            const text = document.getElementById('text-input').value;
+            const wordCount = document.getElementById('wordCount').textContent;
+            const charCount = document.getElementById('charCount').textContent;
+            const charNoSpacesCount = document.getElementById('charNoSpacesCount').textContent;
+            const sentenceCount = document.getElementById('sentenceCount').textContent;
+            const paragraphCount = document.getElementById('paragraphCount').textContent;
+            const readingTime = document.getElementById('readingTime').textContent;
+            const fleschScore = document.getElementById('fleschScore').textContent;
+            const gradeLevel = document.getElementById('gradeLevel').textContent;
+            const longestWord = document.getElementById('longestWord').textContent;
+            const repeatedPhrases = document.getElementById('repeatedPhrases').textContent;
+
+            doc.setFontSize(20);
+            doc.setTextColor(67, 97, 238);
+            doc.text('WordCraft Analysis Report', 105, y, null, null, 'center');
+            y += 10;
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, y, null, null, 'center');
+            y += 15;
+
+            doc.setFontSize(14);
+            doc.text('Basic Statistics', 14, y); y += 8;
+            doc.setFontSize(12);
+            doc.text(`Word Count: ${wordCount}`, 14, y += 8);
+            doc.text(`Character Count: ${charCount}`, 14, y += 8);
+            doc.text(`Characters (no spaces): ${charNoSpacesCount}`, 14, y += 8);
+            doc.text(`Sentences: ${sentenceCount}`, 14, y += 8);
+            doc.text(`Paragraphs: ${paragraphCount}`, 14, y += 8);
+
+            y = checkAddPage(doc, y);
+            doc.setFontSize(14);
+            doc.text('Reading Statistics', 105, y += 10);
+            doc.setFontSize(12);
+            doc.text(`Reading Time: ${readingTime}`, 105, y += 8);
+            doc.text(`Flesch Reading Ease: ${fleschScore}`, 105, y += 8);
+            doc.text(`Grade Level: ${gradeLevel}`, 105, y += 8);
+
+            y = checkAddPage(doc, y);
+            doc.setFontSize(14);
+            doc.text('Text Insights', 14, y += 10);
+            doc.setFontSize(12);
+            doc.text(`Longest Word: ${longestWord}`, 14, y += 8);
+            const phrasesText = `Repeated Phrases: ${repeatedPhrases}`;
+            const splitPhrases = doc.splitTextToSize(phrasesText, 180);
+            splitPhrases.forEach(line => {
+                y += 6;
+                if (y > 280) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(line, 14, y);
+            });
+
+            y = checkAddPage(doc, y);
+            doc.setFontSize(14);
+            doc.text('Text Sample', 14, y += 10);
+            doc.setFontSize(10);
+            const sampleText = text.length > 1000 ? text.substring(0, 1000) + '...' : text;
+            const splitText = doc.splitTextToSize(sampleText, 180);
+
+            const fullTextLines = doc.splitTextToSize(text, 180);
+            fullTextLines.forEach(line => {
+                y += 6;
+                if (y > 280) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(line, 14, y);
+            });
+
+
+            doc.save('WordCraft_Analysis.pdf');
+
+            function checkAddPage(doc, yPos) {
+                if (yPos > 270) {
+                    doc.addPage();
+                    return 20;
+                }
+                return yPos;
+            }
+        }
+
+
+        // Get analysis data
+        const text = document.getElementById('text-input').value;
+        const wordCount = wordCountEl.textContent;
+        const charCount = charCountEl.textContent;
+        const charNoSpacesCount = charNoSpacesCountEl.textContent;
+        const sentenceCount = sentenceCountEl.textContent;
+        const paragraphCount = paragraphCountEl.textContent;
+        const readingTime = readingTimeEl.textContent;
+        const fleschScore = fleschScoreEl.textContent;
+        const gradeLevel = gradeLevelEl.textContent;
+        const longestWord = longestWordEl.textContent;
+        const repeatedPhrases = repeatedPhrasesEl.textContent;
+
+        // Create PDF content
+        doc.setFontSize(20);
+        doc.setTextColor(67, 97, 238);
+        doc.text('WordCraft Analysis Report', 105, 15, null, null, 'center');
+
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 25, null, null, 'center');
+
+        // Add stats
+        doc.setFontSize(14);
+        doc.text('Basic Statistics', 14, 40);
+        doc.line(14, 42, 60, 42);
+
+        doc.setFontSize(12);
+        doc.text(`Word Count: ${wordCount}`, 14, 50);
+        doc.text(`Character Count: ${charCount}`, 14, 58);
+        doc.text(`Characters (no spaces): ${charNoSpacesCount}`, 14, 66);
+        doc.text(`Sentences: ${sentenceCount}`, 14, 74);
+        doc.text(`Paragraphs: ${paragraphCount}`, 14, 82);
+
+        // Add reading stats
+        doc.setFontSize(14);
+        doc.text('Reading Statistics', 105, 40);
+        doc.line(105, 42, 150, 42);
+
+        doc.setFontSize(12);
+        doc.text(`Reading Time: ${readingTime}`, 105, 50);
+        doc.text(`Flesch Reading Ease: ${fleschScore}`, 105, 58);
+        doc.text(`Grade Level: ${gradeLevel}`, 105, 66);
+
+        // Add insights
+        doc.setFontSize(14);
+        doc.text('Text Insights', 14, 100);
+        doc.line(14, 102, 40, 102);
+
+        doc.setFontSize(12);
+        doc.text(`Longest Word: ${longestWord}`, 14, 110);
+
+        const phrasesText = `Repeated Phrases: ${repeatedPhrases}`;
+        const splitPhrases = doc.splitTextToSize(phrasesText, 180);
+        doc.text(splitPhrases, 14, 118);
+
+        // Add text sample (first 500 chars)
+        doc.setFontSize(14);
+        doc.text('Text Sample', 14, 140);
+        doc.line(14, 142, 40, 142);
+
+        doc.setFontSize(10);
+        const sampleText = text.length > 500 ? text.substring(0, 500) + '...' : text;
+        const splitText = doc.splitTextToSize(sampleText, 180);
+        doc.text(splitText, 14, 150);
+
+        // Save the PDF
+        doc.save('WordCraft_Analysis.pdf');
+
+    </script>
+</body>
+
+</html>
